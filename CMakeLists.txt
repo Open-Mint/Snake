@@ -10,7 +10,7 @@ set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/glfw3" ${CMAKE_PREFIX_PAT
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-add_executable(snake src/main.cpp src/glad.c)
+add_executable(snake src/main.cpp src/glad.c src/Text.cpp)
 
 set(FREETYPE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/include/freetype")
 set(FREETYPE_LIBRARY "${CMAKE_SOURCE_DIR}/libfreetype.so")

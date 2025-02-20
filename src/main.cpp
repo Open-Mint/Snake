@@ -3,11 +3,18 @@
 
 #include <iostream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "Shader.h"
+#include "Text.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void render_game(GLFWwindow* window);
-void render_main_menu(GLFWwindow* window);
-void render_highscore(GLFWwindow* window);
+void render_game(GLFWwindow* window, Shader &shader, Text &textRenderer);
+void render_main_menu(GLFWwindow* window, Shader &shader, Text &textRenderer);
+void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer);
 
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 600;
@@ -45,18 +52,27 @@ int main() {
         return -1;
     }
     
+    glEnable(GL_BLEND); // enables blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    Shader shader("../shader/vertex.vs", "../shader/fragment.fs");
+    Text textRenderer("../resources/fonts/Nasalization Rg.otf", SCREEN_WIDTH, SCREEN_HEIGHT);
+ 
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCREEN_WIDTH), 0.0f, static_cast<float>(SCREEN_HEIGHT));
+    shader.use();
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     // render loop
     while(!glfwWindowShouldClose(window)) {
         if(window_state == STATE::MAIN_MENU) {
-            render_main_menu(window);    
+            render_main_menu(window, shader, textRenderer);    
         }
         else
         if(window_state == STATE::GAME) {
-            render_game(window);
+            render_game(window, shader, textRenderer);
         }
         else
         if(window_state == STATE::HIGHSCORE) {
-            render_highscore(window);
+            render_highscore(window, shader, textRenderer);
         }
     }
 
@@ -87,32 +103,36 @@ void processInput(GLFWwindow* window) {
     }
 }
 
-void render_game(GLFWwindow* window) {
+void render_game(GLFWwindow* window, Shader &shader, Text &textRenderer) {
     processInput(window);
 
-    glClearColor(0.4f, 0.6f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
-void render_main_menu(GLFWwindow* window) {
+void render_main_menu(GLFWwindow* window, Shader &shader, Text &textRenderer) {
     processInput(window);
 
-    glClearColor(0.0f, 0.8f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    textRenderer.renderText(shader, "Play - Press Enter", SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 + 100, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
+    textRenderer.renderText(shader, "Highscore - Press H", SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
+    textRenderer.renderText(shader, "Quit - Press ESC", SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2 - 100, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
-void render_highscore(GLFWwindow* window) {
+void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer) {
     processInput(window);
 
-    glClearColor(0.9f, 0.2f, 0.1f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    textRenderer.renderText(shader, "Highscores", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 48, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
     glfwSwapBuffers(window);
     glfwPollEvents();
 }

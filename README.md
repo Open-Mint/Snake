@@ -13,6 +13,8 @@ Please ensure to visit the original work at [https://www.learnopengl.com](https:
 
 This project uses [glfw](https://www.glfw.org/), [glm](https://glm.g-truc.net/0.9.8/index.html), [glad](https://github.com/Dav1dde/glad) that is licensed under [MIT license](https://github.com/Dav1dde/glad/blob/glad2/LICENSE)
 
+This project uses [nasalization free font](https://www.1001fonts.com/nasalization-free-font.html)
+
 ### Acknowledgements:
 - Full Name: Joey de Vries
 - Website: [https://www.learnopengl.com](https://www.learnopengl.com)
