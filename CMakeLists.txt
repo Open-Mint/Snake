@@ -12,6 +12,9 @@ find_package(glfw3 REQUIRED)
 
 add_executable(snake src/main.cpp src/glad.c)
 
-target_include_directories(snake PRIVATE "${CMAKE_SOURCE_DIR}/include")
+set(FREETYPE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/include/freetype")
+set(FREETYPE_LIBRARY "${CMAKE_SOURCE_DIR}/libfreetype.so")
 
-target_link_libraries(snake OpenGL::GL glfw)
+target_include_directories(snake PRIVATE "${CMAKE_SOURCE_DIR}/include" ${FREETYPE_INCLUDE_DIRS})
+
+target_link_libraries(snake OpenGL::GL glfw ${FREETYPE_LIBRARY})

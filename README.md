@@ -7,7 +7,7 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ## Attribution
 
-This project uses code from [Shader.h by Joey de Vries](https://www.learnopengl.com) under the following [license](https://creativecommons.org/licenses/by-nc/4.0/)
+This project uses code from [Shader.h and text processing by Joey de Vries](https://www.learnopengl.com) under the following [license](https://creativecommons.org/licenses/by-nc/4.0/)
 
 Please ensure to visit the original work at [https://www.learnopengl.com](https://www.learnopengl.com).
 
