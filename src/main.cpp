@@ -15,6 +15,9 @@ void processInput(GLFWwindow* window);
 void render_game(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void render_main_menu(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer);
+void handleGameInput(GLFWwindow* window);
+void handleMainMenuInput(GLFWwindow* window);
+void handleHighscoreInput(GLFWwindow* window);
 
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 600;
@@ -26,6 +29,7 @@ enum class STATE {
 };
 
 STATE window_state = STATE::MAIN_MENU;
+bool isEscapeKeyPressedLastFrame = false;
 
 int main() {
     // setting basic OpenGL functionalities
@@ -85,24 +89,52 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window) {
-    // press escape to exit
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && window_state == STATE::GAME) {
-        glfwSetWindowShouldClose(window, true);
-    }
-    else 
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+    switch(window_state) {
+        case STATE::MAIN_MENU:
+            handleMainMenuInput(window);
+            break;
+        case STATE::GAME:
+            handleGameInput(window);
+            break;
+        case STATE::HIGHSCORE:
+            handleHighscoreInput(window);
+            break;
+    }    
+}
+
+// handles game input - makes sure that escape key flag does not go into the next iteration of the loop
+void handleGameInput(GLFWwindow* window) {
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && !isEscapeKeyPressedLastFrame) {
         window_state = STATE::MAIN_MENU;
+        isEscapeKeyPressedLastFrame = true;
+    } else if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+        isEscapeKeyPressedLastFrame = false;
     }
-    // press enter to play
-    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS && window_state == STATE::MAIN_MENU) {
+}
+// handles highscore input - makes sure that escape key flag does not go into the next iteration of the loop
+void handleHighscoreInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && !isEscapeKeyPressedLastFrame) {
+        window_state = STATE::MAIN_MENU;
+        isEscapeKeyPressedLastFrame = true;
+    } else if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+        isEscapeKeyPressedLastFrame = false;
+    }
+}
+// handles main menu input - makes sure that escape key flag does not go into the next iteration of the loop
+void handleMainMenuInput(GLFWwindow* window) {
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && !isEscapeKeyPressedLastFrame) {
+        glfwSetWindowShouldClose(window, true);
+        isEscapeKeyPressedLastFrame = true;
+    } else if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+        isEscapeKeyPressedLastFrame = false;
+    }
+    if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
         window_state = STATE::GAME;
     }
-    // press h to see highscores
-    if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS && window_state == STATE::MAIN_MENU) {
+    if(glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) {
         window_state = STATE::HIGHSCORE;
     }
 }
-
 void render_game(GLFWwindow* window, Shader &shader, Text &textRenderer) {
     processInput(window);
 
