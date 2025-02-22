@@ -9,10 +9,11 @@
 
 #include "Shader.h"
 #include "Text.h"
+#include "Snake.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void render_game(GLFWwindow* window, Shader &shader, Text &textRenderer);
+void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake);
 void render_main_menu(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void handleGameInput(GLFWwindow* window);
@@ -60,8 +61,10 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     Shader shader("../shader/vertex.vs", "../shader/fragment.fs");
+    Shader snake_shader("../shader/snake_shader.vs", "../shader/snake_shader.fs");
     Text textRenderer("../resources/fonts/Nasalization Rg.otf", SCREEN_WIDTH, SCREEN_HEIGHT);
- 
+    Snake snake(window);
+
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCREEN_WIDTH), 0.0f, static_cast<float>(SCREEN_HEIGHT));
     shader.use();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -72,7 +75,7 @@ int main() {
         }
         else
         if(window_state == STATE::GAME) {
-            render_game(window, shader, textRenderer);
+            render_game(window, shader, snake_shader, textRenderer, snake);
         }
         else
         if(window_state == STATE::HIGHSCORE) {
@@ -135,11 +138,13 @@ void handleMainMenuInput(GLFWwindow* window) {
         window_state = STATE::HIGHSCORE;
     }
 }
-void render_game(GLFWwindow* window, Shader &shader, Text &textRenderer) {
+void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake) {
     processInput(window);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    snake_shader.use();
+    snake.render(snake_shader);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
