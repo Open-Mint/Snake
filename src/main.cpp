@@ -32,6 +32,8 @@ enum class STATE {
 STATE window_state = STATE::MAIN_MENU;
 bool isEscapeKeyPressedLastFrame = false;
 
+float dt, lf; // delta time and last frame
+
 int main() {
     // setting basic OpenGL functionalities
     glfwInit();
@@ -144,7 +146,10 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     snake_shader.use();
-    snake.render(snake_shader);
+    float cf = glfwGetTime(); // current frame with implementation of delta time
+    dt = cf - lf;
+    lf = cf;
+    snake.render(snake_shader, dt);
 
     glfwSwapBuffers(window);
     glfwPollEvents();

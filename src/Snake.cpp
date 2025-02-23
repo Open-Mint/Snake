@@ -16,6 +16,10 @@ Snake::Snake(GLFWwindow* window)
     };
 
     
+    snake.push_back(glm::vec2(0.0f, 0.0));
+    snake.push_back(glm::vec2(-0.21f, 0.0f));
+    snake.push_back(glm::vec2(0.21f, 0.0f));
+    
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -59,11 +63,37 @@ void Snake::eat() {}
 void Snake::addSegment() {}
 glm::vec2 Snake::getPosition() const { return position; }
 
-void Snake::render(const Shader& shader) {
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::scale(trans, glm::vec3(0.25, 0.25, 0.25));
-    unsigned int transformLoc = glGetUniformLocation(shader.ID, "transformation");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+void Snake::render(const Shader& shader, float dt) {
+    moveUp();
+    moveLeft();
+    moveRight();
+    moveDown();
+
+    for (auto& segment : snake) {
+        
+        switch(snake_state)
+        {
+            case SNAKE_STATE::UP:
+            segment.y += 0.07 * dt;
+            break;
+            case SNAKE_STATE::DOWN:
+            segment.y -= 0.07 * dt;
+            break;
+            case SNAKE_STATE::LEFT:
+            segment.x -= 0.07 * dt;
+            break;
+            case SNAKE_STATE::RIGHT:
+            segment.x += 0.07 * dt;
+            break;
+        }        
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::scale(model, glm::vec3(0.25, 0.25, 0.25)); // scales the snake by 1/4
+        model = glm::translate(model, glm::vec3(segment.x, segment.y, 0.0f)); // moves the snake accordingly
+
+        shader.setMat4("model", model);
+        
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
 }

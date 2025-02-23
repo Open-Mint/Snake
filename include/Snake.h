@@ -32,7 +32,7 @@ public:
     void eat();
     void addSegment();
     glm::vec2 getPosition() const;
-    void render(const Shader& shader);
+    void render(const Shader& shader, float dt);
 private:
     glm::vec2 position;
     int length;
