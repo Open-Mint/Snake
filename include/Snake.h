@@ -29,6 +29,7 @@ public:
     void moveRight();
     void moveDown();
 
+    void moveBody(float dx, float dy);
     void eat();
     void addSegment();
     glm::vec2 getPosition() const;
@@ -40,6 +41,8 @@ private:
     SNAKE_STATE snake_state;
     GLFWwindow* window;
     unsigned int VAO, VBO, EBO;
+    float moveTimer;
+    float moveInterval;
 };
 
 #endif

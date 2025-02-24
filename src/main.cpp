@@ -21,7 +21,7 @@ void handleMainMenuInput(GLFWwindow* window);
 void handleHighscoreInput(GLFWwindow* window);
 
 const GLuint SCREEN_WIDTH = 800;
-const GLuint SCREEN_HEIGHT = 600;
+const GLuint SCREEN_HEIGHT = 800;
 
 enum class STATE {
     MAIN_MENU,

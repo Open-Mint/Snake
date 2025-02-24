@@ -2,7 +2,7 @@
 
 
 Snake::Snake(GLFWwindow* window)
-: window(window), snake_state(SNAKE_STATE::LEFT)
+: window(window), snake_state(SNAKE_STATE::LEFT), moveTimer(0.0f), moveInterval(0.21f)
 {
     float vertices[] = {
          0.1f,  0.1f, 0.0f,
@@ -17,7 +17,7 @@ Snake::Snake(GLFWwindow* window)
 
     
     snake.push_back(glm::vec2(-0.21f, 0.0f));
-    snake.push_back(glm::vec2(0.0f, 0.0));
+    snake.push_back(glm::vec2(0.0f, 0.0f));
     snake.push_back(glm::vec2(0.21f, 0.0f));
     
     glGenVertexArrays(1, &VAO);
@@ -63,30 +63,39 @@ void Snake::eat() {}
 void Snake::addSegment() {}
 glm::vec2 Snake::getPosition() const { return position; }
 
+void Snake::moveBody(float dx, float dy) {
+    for (int i = snake.size() - 1; i > 0; --i) {
+        snake[i] = snake[i-1];
+    }
+    snake.front() = glm::vec2(snake.front().x + dx, snake.front().y + dy);
+}
+
 void Snake::render(const Shader& shader, float dt) {
     moveUp();
     moveLeft();
     moveRight();
     moveDown();
 
-    for (auto& segment : snake) {
-        
+    moveTimer += 0.016f;
+    if (moveTimer >= moveInterval) {    
+        moveTimer = 0.0f;
         switch(snake_state)
         {
             case SNAKE_STATE::UP:
-            segment.y += 0.07 * dt;
+            moveBody(0, 0.21);
             break;
             case SNAKE_STATE::DOWN:
-            segment.y -= 0.07 * dt;
+            moveBody(0, -0.21);
             break;
             case SNAKE_STATE::LEFT:
-            segment.x -= 0.07 * dt;
+            moveBody(-0.21, 0);
             break;
             case SNAKE_STATE::RIGHT:
-            segment.x += 0.07 * dt;
+            moveBody(0.21, 0);
             break;
         }        
-
+    }
+    for (auto& segment : snake) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(0.25, 0.25, 0.25)); // scales the snake by 1/4
         model = glm::translate(model, glm::vec3(segment.x, segment.y, 0.0f)); // moves the snake accordingly
