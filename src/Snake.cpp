@@ -2,7 +2,7 @@
 
 
 Snake::Snake(GLFWwindow* window)
-: window(window), snake_state(SNAKE_STATE::UP)
+: window(window), snake_state(SNAKE_STATE::LEFT)
 {
     float vertices[] = {
          0.1f,  0.1f, 0.0f,
@@ -16,8 +16,8 @@ Snake::Snake(GLFWwindow* window)
     };
 
     
-    snake.push_back(glm::vec2(0.0f, 0.0));
     snake.push_back(glm::vec2(-0.21f, 0.0f));
+    snake.push_back(glm::vec2(0.0f, 0.0));
     snake.push_back(glm::vec2(0.21f, 0.0f));
     
     glGenVertexArrays(1, &VAO);
@@ -39,22 +39,22 @@ Snake::~Snake() {
 }
 
 void Snake::moveUp() {
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && snake_state != SNAKE_STATE::DOWN) {
         snake_state = SNAKE_STATE::UP;
     }
 }
 void Snake::moveLeft() {
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && snake_state != SNAKE_STATE::RIGHT) {
         snake_state = SNAKE_STATE::LEFT;    
     }
 }
 void Snake::moveRight() {
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && snake_state != SNAKE_STATE::LEFT) {
         snake_state = SNAKE_STATE::RIGHT;    
     }
 }
 void Snake::moveDown() {
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && snake_state != SNAKE_STATE::UP) {
         snake_state = SNAKE_STATE::DOWN;
     }
 }
