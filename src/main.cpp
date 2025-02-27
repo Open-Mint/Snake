@@ -10,10 +10,11 @@
 #include "Shader.h"
 #include "Text.h"
 #include "Snake.h"
+#include "Food.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake);
+void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake, Food& food);
 void render_main_menu(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void handleGameInput(GLFWwindow* window);
@@ -33,6 +34,10 @@ STATE window_state = STATE::MAIN_MENU;
 bool isEscapeKeyPressedLastFrame = false;
 
 float dt, lf; // delta time and last frame
+
+const int GRID_CELL_SIZE = 32;
+const int GRID_WIDTH = 25;
+const int GRID_HEIGHT = 25;
 
 int main() {
     // setting basic OpenGL functionalities
@@ -65,11 +70,15 @@ int main() {
     Shader shader("../shader/vertex.vs", "../shader/fragment.fs");
     Shader snake_shader("../shader/snake_shader.vs", "../shader/snake_shader.fs");
     Text textRenderer("../resources/fonts/Nasalization Rg.otf", SCREEN_WIDTH, SCREEN_HEIGHT);
-    Snake snake(window);
+    Snake snake(window, GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE);
+    Food food(GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE);
 
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCREEN_WIDTH), 0.0f, static_cast<float>(SCREEN_HEIGHT));
     shader.use();
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    shader.setMat4("projection", projection);
+    
+    snake_shader.use();
+    snake_shader.setMat4("projection", projection);
     // render loop
     while(!glfwWindowShouldClose(window)) {
         if(window_state == STATE::MAIN_MENU) {
@@ -77,7 +86,7 @@ int main() {
         }
         else
         if(window_state == STATE::GAME) {
-            render_game(window, shader, snake_shader, textRenderer, snake);
+            render_game(window, shader, snake_shader, textRenderer, snake, food);
         }
         else
         if(window_state == STATE::HIGHSCORE) {
@@ -140,7 +149,7 @@ void handleMainMenuInput(GLFWwindow* window) {
         window_state = STATE::HIGHSCORE;
     }
 }
-void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake) {
+void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake, Food& food) {
     processInput(window);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -150,6 +159,13 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     dt = cf - lf;
     lf = cf;
     snake.render(snake_shader, dt);
+
+    if (snake.getSnake().front() == food.getPosition())
+    {
+        snake.addSegment();
+        food.respawn();
+    }
+    food.render(snake_shader);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
