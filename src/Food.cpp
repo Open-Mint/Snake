@@ -1,7 +1,7 @@
 #include "Food.h"
 
-Food::Food(int gridWidth, int gridHeight, int cellSize)
-: gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize) {
+Food::Food(int gridWidth, int gridHeight, int cellSize, std::deque<glm::ivec2> snake)
+: gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize), snake(snake) {
     float vertices[] = {
          0.1f,  0.1f, 0.0f,
          0.1f, -0.1f, 0.0f,
@@ -34,8 +34,22 @@ void Food::respawn() {
     RandomNumberGenerator rngX(0, gridWidth - 1);
     RandomNumberGenerator rngY(0, gridHeight - 1);
 
-    position.x = rngX.getNumber();
-    position.y = rngY.getNumber();
+    bool isOnTheSnake = true;
+    while(isOnTheSnake != false)
+    {
+        position.x = rngX.getNumber();
+        position.y = rngY.getNumber();
+        for (auto& segment : snake)
+        {
+            if (position.x == segment.x && position.y == segment.y)
+            {
+                isOnTheSnake = true;
+            }
+            else {
+                isOnTheSnake = false;    
+            }
+        }
+    }
 }
 
 glm::ivec2 Food::getPosition() const {

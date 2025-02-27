@@ -71,7 +71,7 @@ int main() {
     Shader snake_shader("../shader/snake_shader.vs", "../shader/snake_shader.fs");
     Text textRenderer("../resources/fonts/Nasalization Rg.otf", SCREEN_WIDTH, SCREEN_HEIGHT);
     Snake snake(window, GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE);
-    Food food(GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE);
+    Food food(GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE, snake.getSnake());
 
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCREEN_WIDTH), 0.0f, static_cast<float>(SCREEN_HEIGHT));
     shader.use();

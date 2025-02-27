@@ -11,9 +11,11 @@
 
 #include "Shader.h"
 
+#include <deque>
+
 class Food {
 public:
-    Food(int gridWidth, int gridHeight, int cellSize);
+    Food(int gridWidth, int gridHeight, int cellSize, std::deque<glm::ivec2> snake);
     ~Food();
     void render(const Shader &shader);
     void respawn();
@@ -22,6 +24,7 @@ private:
     glm::ivec2 position;
     int gridWidth, gridHeight, cellSize;
     unsigned int VAO, VBO, EBO;
+    std::deque<glm::ivec2> snake;
 };
 
 #endif
