@@ -2,7 +2,7 @@
 
 Snake::Snake(GLFWwindow* window, int gridWidth, int gridHeight, int cellSize)
 : window(window), snake_state(SNAKE_STATE::LEFT), moveTimer(0.0f), moveInterval(0.21f),
-gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize)
+gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize), coolDownTime(0.2f), lastDirectionChangeTime(0.0f)
 {
     float vertices[] = {
          0.1f,  0.1f, 0.0f,
@@ -39,24 +39,36 @@ Snake::~Snake() {
 }
 
 void Snake::moveUp() {
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && snake_state != SNAKE_STATE::DOWN) {
+    float currentTime = glfwGetTime();
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && snake_state != SNAKE_STATE::DOWN && canChangeDirection(currentTime)) {
         snake_state = SNAKE_STATE::UP;
+        lastDirectionChangeTime = currentTime;
     }
 }
 void Snake::moveLeft() {
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && snake_state != SNAKE_STATE::RIGHT) {
-        snake_state = SNAKE_STATE::LEFT;    
+    float currentTime = glfwGetTime();
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && snake_state != SNAKE_STATE::RIGHT && canChangeDirection(currentTime)) {
+        snake_state = SNAKE_STATE::LEFT;
+        lastDirectionChangeTime = currentTime;
     }
 }
 void Snake::moveRight() {
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && snake_state != SNAKE_STATE::LEFT) {
-        snake_state = SNAKE_STATE::RIGHT;    
+    float currentTime = glfwGetTime();
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && snake_state != SNAKE_STATE::LEFT && canChangeDirection(currentTime)) {
+        snake_state = SNAKE_STATE::RIGHT;
+        lastDirectionChangeTime = currentTime;
     }
 }
 void Snake::moveDown() {
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && snake_state != SNAKE_STATE::UP) {
+    float currentTime = glfwGetTime();
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && snake_state != SNAKE_STATE::UP && canChangeDirection(currentTime)) {
         snake_state = SNAKE_STATE::DOWN;
+        lastDirectionChangeTime = currentTime;
     }
+}
+
+bool Snake::canChangeDirection(float currentTime) {
+        return (currentTime - lastDirectionChangeTime) >= coolDownTime;
 }
 
 std::deque<glm::ivec2> Snake::getSnake() const {

@@ -34,6 +34,7 @@ public:
     std::deque<glm::ivec2> getSnake() const;
     void setPosition(int x, int y);
     void reset();
+    bool canChangeDirection(float currentTime);
 private:
     glm::vec2 position;
     int length;
@@ -44,6 +45,7 @@ private:
     float moveTimer;
     float moveInterval;
     int gridWidth, gridHeight, cellSize;
+    float coolDownTime, lastDirectionChangeTime;
 };
 
 #endif
