@@ -184,6 +184,15 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     {
         snake.reset();
     }
+    auto front = snake.getSnake().front();
+    for (int i = snake.getSnake().size() - 1; i > 0; --i)
+    {
+        if (front.x == snake.getSnake()[i].x && front.y == snake.getSnake()[i].y)
+        {
+            window_state = STATE::MAIN_MENU;
+            snake.reset();
+        }
+    }
     snake.render(snake_shader, dt);
     food.render(snake_shader);
 
