@@ -76,6 +76,9 @@ void Snake::moveBody(int dx, int dy) {
     snake.front() += glm::ivec2(dx, dy);
 }
 
+void Snake::setPosition(int x, int y) {
+    snake.front() = glm::ivec2(x, y);
+}
 void Snake::render(const Shader& shader, float dt) {
     moveUp();
     moveLeft();

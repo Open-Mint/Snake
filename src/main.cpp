@@ -165,6 +165,23 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
         snake.addSegment();
         food.respawn();
     }
+    if (snake.getSnake().front().x + 1 > GRID_WIDTH) // wrap around right
+    {
+        snake.setPosition(0, snake.getSnake().front().y);
+    }
+    if (snake.getSnake().front().x < 0) // wrap around left
+    {
+        snake.setPosition(GRID_WIDTH - 1, snake.getSnake().front().y);
+    }
+    if (snake.getSnake().front().y + 1 > GRID_HEIGHT) // wrap around up
+    {
+        snake.setPosition(snake.getSnake().front().x, 0);
+    }
+    if (snake.getSnake().front().y < 0) // wrap around down
+    {
+        snake.setPosition(snake.getSnake().front().x, GRID_HEIGHT - 1);
+    }
+
     food.render(snake_shader);
 
     glfwSwapBuffers(window);

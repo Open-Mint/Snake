@@ -32,6 +32,7 @@ public:
     glm::vec2 getPosition() const;
     void render(const Shader& shader, float dt);
     std::deque<glm::ivec2> getSnake() const;
+    void setPosition(int x, int y);
 private:
     glm::vec2 position;
     int length;
