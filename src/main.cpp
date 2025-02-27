@@ -158,7 +158,6 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     float cf = glfwGetTime(); // current frame with implementation of delta time
     dt = cf - lf;
     lf = cf;
-    snake.render(snake_shader, dt);
 
     if (snake.getSnake().front() == food.getPosition())
     {
@@ -181,7 +180,11 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     {
         snake.setPosition(snake.getSnake().front().x, GRID_HEIGHT - 1);
     }
-
+    if (window_state == STATE::MAIN_MENU)
+    {
+        snake.reset();
+    }
+    snake.render(snake_shader, dt);
     food.render(snake_shader);
 
     glfwSwapBuffers(window);

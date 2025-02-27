@@ -79,6 +79,17 @@ void Snake::moveBody(int dx, int dy) {
 void Snake::setPosition(int x, int y) {
     snake.front() = glm::ivec2(x, y);
 }
+
+void Snake::reset()
+{
+    snake.clear();
+
+    snake.push_back(glm::ivec2(gridWidth/2-1, gridHeight/2));
+    snake.push_back(glm::ivec2(gridWidth/2, gridHeight/2));
+    snake.push_back(glm::ivec2(gridWidth/2+1, gridHeight/2));
+
+}
+
 void Snake::render(const Shader& shader, float dt) {
     moveUp();
     moveLeft();

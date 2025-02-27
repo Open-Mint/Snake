@@ -33,6 +33,7 @@ public:
     void render(const Shader& shader, float dt);
     std::deque<glm::ivec2> getSnake() const;
     void setPosition(int x, int y);
+    void reset();
 private:
     glm::vec2 position;
     int length;
