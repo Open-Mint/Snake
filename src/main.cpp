@@ -12,6 +12,9 @@
 #include "Snake.h"
 #include "Food.h"
 
+#include <sstream>
+#include <iomanip>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake, Food& food);
@@ -38,6 +41,8 @@ float dt, lf; // delta time and last frame
 const int GRID_CELL_SIZE = 32;
 const int GRID_WIDTH = 25;
 const int GRID_HEIGHT = 25;
+
+int count = 0;
 
 int main() {
     // setting basic OpenGL functionalities
@@ -154,6 +159,9 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    std::ostringstream count_string;
+    count_string << std::setw(4) << std::setfill('0') << count; 
+    textRenderer.renderText(shader, count_string.str(), SCREEN_WIDTH - 150, SCREEN_HEIGHT - 60, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f)); // keeps track of highscore on screen
     snake_shader.use();
     float cf = glfwGetTime(); // current frame with implementation of delta time
     dt = cf - lf;
@@ -163,6 +171,7 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     {
         snake.addSegment();
         food.respawn();
+        count++;
     }
     if (snake.getSnake().front().x + 1 > GRID_WIDTH) // wrap around right
     {
@@ -183,6 +192,7 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     if (window_state == STATE::MAIN_MENU)
     {
         snake.reset();
+        count = 0;
     }
     auto front = snake.getSnake().front();
     for (int i = snake.getSnake().size() - 1; i > 0; --i)
