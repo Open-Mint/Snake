@@ -43,6 +43,7 @@ const int GRID_WIDTH = 25;
 const int GRID_HEIGHT = 25;
 
 int count = 0;
+bool isFirstTime = true;
 
 int main() {
     // setting basic OpenGL functionalities
@@ -155,6 +156,11 @@ void handleMainMenuInput(GLFWwindow* window) {
     }
 }
 void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake, Food& food) {
+    if (isFirstTime == true)
+    {
+        snake.setState(SNAKE_STATE::LEFT);
+        isFirstTime = false;
+    }
     processInput(window);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -173,26 +179,27 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
         food.respawn();
         count++;
     }
-    if (snake.getSnake().front().x + 1 > GRID_WIDTH) // wrap around right
+    if (snake.getSnake().front().x + 1 > GRID_WIDTH) // collision right ends the game
     {
-        snake.setPosition(0, snake.getSnake().front().y);
+        window_state = STATE::MAIN_MENU;
     }
-    if (snake.getSnake().front().x < 0) // wrap around left
+    if (snake.getSnake().front().x < 0) // collision left ends the game
     {
-        snake.setPosition(GRID_WIDTH - 1, snake.getSnake().front().y);
+        window_state = STATE::MAIN_MENU;
     }
-    if (snake.getSnake().front().y + 1 > GRID_HEIGHT) // wrap around up
+    if (snake.getSnake().front().y + 1 > GRID_HEIGHT) // collision up ends the game
     {
-        snake.setPosition(snake.getSnake().front().x, 0);
+        window_state = STATE::MAIN_MENU;
     }
-    if (snake.getSnake().front().y < 0) // wrap around down
+    if (snake.getSnake().front().y < 0) // collision down ends the game
     {
-        snake.setPosition(snake.getSnake().front().x, GRID_HEIGHT - 1);
+        window_state = STATE::MAIN_MENU;
     }
     if (window_state == STATE::MAIN_MENU)
     {
         snake.reset();
         count = 0;
+        isFirstTime = true;
     }
     auto front = snake.getSnake().front();
     for (int i = snake.getSnake().size() - 1; i > 0; --i)
@@ -200,7 +207,6 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
         if (front.x == snake.getSnake()[i].x && front.y == snake.getSnake()[i].y)
         {
             window_state = STATE::MAIN_MENU;
-            snake.reset();
         }
     }
     snake.render(snake_shader, dt);

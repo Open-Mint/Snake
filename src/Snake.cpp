@@ -1,7 +1,7 @@
 #include "Snake.h"
 
 Snake::Snake(GLFWwindow* window, int gridWidth, int gridHeight, int cellSize)
-: window(window), snake_state(SNAKE_STATE::LEFT), moveTimer(0.0f), moveInterval(0.21f),
+: window(window), snake_state(SNAKE_STATE::NONE), moveTimer(0.0f), moveInterval(0.21f),
 gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize), coolDownTime(0.2f), lastDirectionChangeTime(0.0f)
 {
     float vertices[] = {
@@ -90,6 +90,11 @@ void Snake::moveBody(int dx, int dy) {
 
 void Snake::setPosition(int x, int y) {
     snake.front() = glm::ivec2(x, y);
+}
+
+void Snake::setState(SNAKE_STATE state)
+{
+    snake_state = state;
 }
 
 void Snake::reset()

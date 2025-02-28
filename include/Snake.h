@@ -15,7 +15,8 @@ enum class SNAKE_STATE {
     UP,
     LEFT,
     RIGHT,
-    DOWN
+    DOWN,
+    NONE
 };
 
 class Snake {
@@ -35,6 +36,7 @@ public:
     void setPosition(int x, int y);
     void reset();
     bool canChangeDirection(float currentTime);
+    void setState(SNAKE_STATE state);
 private:
     glm::vec2 position;
     int length;
