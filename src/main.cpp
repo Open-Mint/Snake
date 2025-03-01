@@ -25,6 +25,8 @@ void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer);
 void handleGameInput(GLFWwindow* window);
 void handleMainMenuInput(GLFWwindow* window);
 void handleHighscoreInput(GLFWwindow* window);
+void handleYourHighscoreInput(GLFWwindow* window);
+void render_yourHighscore(GLFWwindow* window, Shader& shader, Text& textRenderer);
 
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 800;
@@ -32,7 +34,8 @@ const GLuint SCREEN_HEIGHT = 800;
 enum class STATE {
     MAIN_MENU,
     HIGHSCORE,
-    GAME
+    GAME,
+    YOUR_HIGHSCORE
 };
 
 STATE window_state = STATE::MAIN_MENU;
@@ -110,6 +113,10 @@ int main() {
         if(window_state == STATE::HIGHSCORE) {
             render_highscore(window, shader, textRenderer);
         }
+        else 
+        if(window_state == STATE::YOUR_HIGHSCORE){
+            render_yourHighscore(window, shader, textRenderer);
+        }
     }
 
     glfwTerminate();
@@ -131,9 +138,21 @@ void processInput(GLFWwindow* window) {
         case STATE::HIGHSCORE:
             handleHighscoreInput(window);
             break;
+        case STATE::YOUR_HIGHSCORE:
+            handleYourHighscoreInput(window);
+            break;
     }    
 }
 
+void handleYourHighscoreInput(GLFWwindow* window)
+{
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && !isEscapeKeyPressedLastFrame) {
+        window_state = STATE::MAIN_MENU;
+        isEscapeKeyPressedLastFrame = true;
+    } else if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_RELEASE) {
+        isEscapeKeyPressedLastFrame = false;
+    }
+}
 // handles game input - makes sure that escape key flag does not go into the next iteration of the loop
 void handleGameInput(GLFWwindow* window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && !isEscapeKeyPressedLastFrame) {
@@ -167,9 +186,27 @@ void handleMainMenuInput(GLFWwindow* window) {
         window_state = STATE::HIGHSCORE;
     }
 }
+
+void render_yourHighscore(GLFWwindow* window, Shader& shader, Text& textRenderer)
+{
+    processInput(window);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    std::ostringstream your_highscore;
+    your_highscore << "Your highscore is: " << count;
+    textRenderer.renderText(shader, your_highscore.str(), SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT / 2 + 100, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
+    textRenderer.renderText(shader, "Press ESC for main menu", SCREEN_WIDTH / 2 - 300, SCREEN_HEIGHT / 2, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
+    
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+}
+
 void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake, Food& food, Line& line, Shader& line_shader, Rect& rect, Shader& rect_shader) {
     if (isFirstTime == true)
     {
+        count = 0;
         snake.setState(SNAKE_STATE::LEFT);
         isFirstTime = false;
     }
@@ -210,8 +247,8 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     if (window_state == STATE::MAIN_MENU)
     {
         snake.reset();
-        count = 0;
         isFirstTime = true;
+        window_state = STATE::YOUR_HIGHSCORE;
     }
     auto front = snake.getSnake().front();
     for (int i = snake.getSnake().size() - 1; i > 0; --i)
