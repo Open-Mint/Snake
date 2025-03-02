@@ -17,6 +17,11 @@
 #include <sstream>
 #include <iomanip>
 
+#include <fstream>
+#include <algorithm>
+#include <iterator>
+#include <set>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text &textRenderer, Snake &snake, Food& food, Line& line, Shader& line_shader, Rect& rect, Shader& rect_shader);
@@ -27,6 +32,7 @@ void handleMainMenuInput(GLFWwindow* window);
 void handleHighscoreInput(GLFWwindow* window);
 void handleYourHighscoreInput(GLFWwindow* window);
 void render_yourHighscore(GLFWwindow* window, Shader& shader, Text& textRenderer);
+void save_highscore(int score, std::fstream &File);
 
 const GLuint SCREEN_WIDTH = 800;
 const GLuint SCREEN_HEIGHT = 800;
@@ -49,7 +55,7 @@ const int GRID_HEIGHT = 22;
 
 int count = 0;
 bool isFirstTime = true;
-
+bool canWorkOnFile = false;
 int main() {
     // setting basic OpenGL functionalities
     glfwInit();
@@ -100,6 +106,19 @@ int main() {
 
     rect_shader.use();
     rect_shader.setMat4("projection", projection);
+
+    std::fstream file("../highscore/highscore.txt", std::ios::in | std::ios::out | std::ios::app);
+    std::fstream new_file;
+    if (file.is_open())
+    {
+        canWorkOnFile = true;
+        file.close();
+    }
+    else {
+        new_file = std::fstream("../highscore/highscore.txt", std::ios::in | std::ios::out | std::ios::app);
+        canWorkOnFile = true;
+    }
+    
     // render loop
     while(!glfwWindowShouldClose(window)) {
         if(window_state == STATE::MAIN_MENU) {
@@ -249,13 +268,26 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
         snake.reset();
         isFirstTime = true;
         window_state = STATE::YOUR_HIGHSCORE;
+        if (canWorkOnFile && count != 0)
+        {
+            std::fstream new_file("../highscore/highscore.txt", std::ios::in | std::ios::out | std::ios::app);
+            save_highscore(count, new_file);
+        }
     }
     auto front = snake.getSnake().front();
     for (int i = snake.getSnake().size() - 1; i > 0; --i)
     {
         if (front.x == snake.getSnake()[i].x && front.y == snake.getSnake()[i].y)
         {
-            window_state = STATE::MAIN_MENU;
+            snake.reset();
+            isFirstTime = true;
+            window_state = STATE::YOUR_HIGHSCORE;
+            if (canWorkOnFile && count != 0)
+            {
+                std::fstream new_file("../highscore/highscore.txt", std::ios::in | std::ios::out | std::ios::app);
+                save_highscore(count, new_file);
+            }
+            window_state = STATE::YOUR_HIGHSCORE;
         }
     }
     snake.render(snake_shader, dt);
@@ -289,4 +321,80 @@ void render_highscore(GLFWwindow* window, Shader &shader, Text &textRenderer) {
     textRenderer.renderText(shader, "Highscores", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 48, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f));
     glfwSwapBuffers(window);
     glfwPollEvents();
+}
+
+// Save up to three highscores and if the current score gets bigger or equal to any of the current highscores place it where it belongs
+void save_highscore(int score, std::fstream &File) 
+{
+    // Reads contents of the file
+    std::vector<char> highscoreContent((std::istreambuf_iterator<char>(File)), std::istreambuf_iterator<char>());
+    
+    std::vector<std::string> numbers;
+
+    // Puts file data into the ostringstream as strings so that you can count multiple digit numbers as well
+    std::ostringstream s;
+    for (int i = 0; i < highscoreContent.size(); i++)
+    {
+        if (highscoreContent[i] == '\n')
+        {
+            numbers.emplace_back(s.str());
+            s.str("");
+        }
+        else {
+            s << highscoreContent[i];     
+        }
+    }
+
+    // Deletes the file contents
+    std::ofstream file("../highscore/highscore.txt", std::ios::out | std::ios::trunc);
+    
+    // Checks if the current score is bigger than any of the current highscores
+    for (int i = 0; i < numbers.size(); i++)
+    {
+        if (score > std::stoi(numbers[i]))
+        {
+            numbers.emplace_back(std::to_string(score));
+            break;
+        }
+    }
+    // Checks if there are no highscores yet 
+    if (numbers.empty())
+    {
+        numbers.emplace_back(std::to_string(score));
+    }
+
+    // If the numbers are less than 3 you still fill the list up to 3
+    if (numbers.size() <= 3)
+    {
+        for (auto &n : numbers)
+        {
+            if (score < std::stoi(n))
+            {
+                numbers.emplace_back(std::to_string(score));
+                break;
+            }
+        }
+    }
+
+    // Pops the unwanted last element
+    if (numbers.size() > 3)
+        numbers.pop_back();
+    
+    // Set removes duplicates
+    std::set<std::string> filteredDuplicatesHighscore(numbers.begin(), numbers.end());
+    
+    // Then we put it in vector so that we can use std::sort
+    std::vector<std::string> finalHighscore(filteredDuplicatesHighscore.begin(), filteredDuplicatesHighscore.end());
+    
+    // Sorts in reverse order - so that the highscore goes from highest to lowest
+    std::sort(finalHighscore.begin(), finalHighscore.end(), [](const std::string& a, const std::string& b) { return std::stoi(a) > std::stoi(b); });
+    
+    // Put the data in the file
+    for (const auto& score : finalHighscore)
+    {
+        File << score << "\n";
+    }
+
+    file.close();
+    File.close();
 }
