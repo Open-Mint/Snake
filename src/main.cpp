@@ -92,6 +92,7 @@ int main() {
     Text textRenderer("../resources/fonts/Nasalization Rg.otf", SCREEN_WIDTH, SCREEN_HEIGHT);
     Snake snake(window, GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE);
     Food food(GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE, snake.getSnake());
+    food.initOpenGL();
     Line line(GRID_WIDTH, GRID_HEIGHT, GRID_CELL_SIZE);
     Rect rect;
 

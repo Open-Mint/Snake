@@ -4,36 +4,39 @@ Snake::Snake(GLFWwindow* window, int gridWidth, int gridHeight, int cellSize)
 : window(window), snake_state(SNAKE_STATE::NONE), moveTimer(0.0f), moveInterval(0.21f),
 gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize), coolDownTime(0.2f), lastDirectionChangeTime(0.0f)
 {
-    float vertices[] = {
-         0.1f,  0.1f, 0.0f,
-         0.1f, -0.1f, 0.0f,
-        -0.1f, -0.1f, 0.0f,
-        -0.1f,  0.1f, 0.0f
-    };
-    unsigned int indices[] {
-        0, 1, 3,
-        1, 2, 3
-    };
+    // window will be nullptr in unit tests
+    if (window != nullptr)
+    {
+        float vertices[] = {
+             0.1f,  0.1f, 0.0f,
+             0.1f, -0.1f, 0.0f,
+            -0.1f, -0.1f, 0.0f,
+            -0.1f,  0.1f, 0.0f
+        };
+        unsigned int indices[] {
+            0, 1, 3,
+            1, 2, 3
+        };
 
+
+        snake.push_back(glm::ivec2(gridWidth/2-1, gridHeight/2));
+        snake.push_back(glm::ivec2(gridWidth/2, gridHeight/2));
+        snake.push_back(glm::ivec2(gridWidth/2+1, gridHeight/2));
     
-    snake.push_back(glm::ivec2(gridWidth/2-1, gridHeight/2));
-    snake.push_back(glm::ivec2(gridWidth/2, gridHeight/2));
-    snake.push_back(glm::ivec2(gridWidth/2+1, gridHeight/2));
-    
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
 }
-
 Snake::~Snake() {
     glfwDestroyWindow(window);
 }

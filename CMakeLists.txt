@@ -18,3 +18,13 @@ set(FREETYPE_LIBRARY "${CMAKE_SOURCE_DIR}/libfreetype.so")
 target_include_directories(snake PRIVATE "${CMAKE_SOURCE_DIR}/include" ${FREETYPE_INCLUDE_DIRS})
 
 target_link_libraries(snake OpenGL::GL glfw ${FREETYPE_LIBRARY})
+
+# Testing with Google Test
+enable_testing()
+find_package(GTest REQUIRED)
+add_executable(snake_test tests/food_placement/food_placement.cpp src/Food.cpp src/Snake.cpp src/glad.c src/RandomNumberGenerator.cpp)
+
+target_include_directories(snake_test PRIVATE ${GTEST_INCLUDE_DIRS} "${CMAKE_SOURCE_DIR}/include")
+target_link_libraries(snake_test gtest gtest_main OpenGL::GL glfw)
+
+add_test(NAME Food_Placement COMMAND snake_test)

@@ -17,6 +17,7 @@ class Food {
 public:
     Food(int gridWidth, int gridHeight, int cellSize, std::deque<glm::ivec2> snake);
     ~Food();
+    void initOpenGL();
     void render(const Shader &shader);
     void respawn();
     glm::ivec2 getPosition() const;

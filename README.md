@@ -15,6 +15,7 @@ This project uses [glfw](https://www.glfw.org/), [glm](https://glm.g-truc.net/0.
 
 This project uses [nasalization free font](https://www.1001fonts.com/nasalization-free-font.html)
 
+Unit tests are written with [gtest](https://github.com/google/googletest) whhich is licensed under [BSD 3-Clause](https://github.com/google/googletest/blob/main/LICENSE)
 ### Acknowledgements:
 - Full Name: Joey de Vries
 - Website: [https://www.learnopengl.com](https://www.learnopengl.com)

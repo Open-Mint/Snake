@@ -2,6 +2,12 @@
 
 Food::Food(int gridWidth, int gridHeight, int cellSize, std::deque<glm::ivec2> snake)
 : gridWidth(gridWidth), gridHeight(gridHeight), cellSize(cellSize), snake(snake) {
+    respawn();
+}
+
+// Split the starting logic to the seperate function in order to make unit testing work
+void Food::initOpenGL()
+{
     float vertices[] = {
          0.1f,  0.1f, 0.0f,
          0.1f, -0.1f, 0.0f,
@@ -24,8 +30,6 @@ Food::Food(int gridWidth, int gridHeight, int cellSize, std::deque<glm::ivec2> s
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    respawn();
 }
 
 Food::~Food() {}
@@ -35,18 +39,18 @@ void Food::respawn() {
     RandomNumberGenerator rngY(0, gridHeight - 1);
 
     bool isOnTheSnake = true;
-    while(isOnTheSnake != false)
+    while(isOnTheSnake)
     {
         position.x = rngX.getNumber();
         position.y = rngY.getNumber();
+        isOnTheSnake = false;    
+    
         for (auto& segment : snake)
         {
             if (position.x == segment.x && position.y == segment.y)
             {
                 isOnTheSnake = true;
-            }
-            else {
-                isOnTheSnake = false;    
+                break;
             }
         }
     }
