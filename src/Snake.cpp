@@ -110,13 +110,13 @@ void Snake::reset()
 
 }
 
-void Snake::render(const Shader& shader, float dt) {
+void Snake::render(const Shader& shader, float speed) {
     moveUp();
     moveLeft();
     moveRight();
     moveDown();
 
-    moveTimer += dt;
+    moveTimer += speed;
     if (moveTimer >= moveInterval) {    
         moveTimer = 0.0f;
         switch(snake_state)

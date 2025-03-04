@@ -48,8 +48,7 @@ enum class STATE {
 STATE window_state = STATE::MAIN_MENU;
 bool isEscapeKeyPressedLastFrame = false;
 
-float dt, lf; // delta time and last frame
-
+float speed = 0.016f;
 const int GRID_CELL_SIZE = 32;
 const int GRID_WIDTH = 25;
 const int GRID_HEIGHT = 22;
@@ -239,15 +238,13 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     count_string << std::setw(4) << std::setfill('0') << count; 
     textRenderer.renderText(shader, count_string.str(), SCREEN_WIDTH - 150, SCREEN_HEIGHT - 60, 1.0f, glm::vec3(0.827f, 0.827f, 0.827f)); // keeps track of highscore on screen
     snake_shader.use();
-    float cf = glfwGetTime(); // current frame with implementation of delta time
-    dt = cf - lf;
-    lf = cf;
 
     if (snake.getSnake().front() == food.getPosition())
     {
         snake.addSegment();
         food.respawn();
         count++;
+        speed += 0.001f;
     }
     if (snake.getSnake().front().x + 1 > GRID_WIDTH) // collision right ends the game
     {
@@ -292,7 +289,7 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
             window_state = STATE::YOUR_HIGHSCORE;
         }
     }
-    snake.render(snake_shader, dt);
+    snake.render(snake_shader, speed);
     food.render(snake_shader);
     line.render(line_shader);
     rect.render(rect_shader, GRID_HEIGHT, GRID_CELL_SIZE);

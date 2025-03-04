@@ -31,7 +31,7 @@ public:
     void moveBody(int dx, int dy);
     void addSegment();
     glm::vec2 getPosition() const;
-    void render(const Shader& shader, float dt);
+    void render(const Shader& shader, float speed);
     std::deque<glm::ivec2> getSnake() const;
     void setPosition(int x, int y);
     void reset();
