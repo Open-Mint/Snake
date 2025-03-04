@@ -228,6 +228,7 @@ void render_game(GLFWwindow* window, Shader &shader, Shader &snake_shader, Text 
     {
         count = 0;
         snake.setState(SNAKE_STATE::LEFT);
+        speed = 0.016f;
         isFirstTime = false;
     }
     processInput(window);
